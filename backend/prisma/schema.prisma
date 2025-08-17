@@ -1,0 +1,74 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  user_id      Int      @id @default(autoincrement())
+  username     String   @unique
+  email        String   @unique
+  password     String
+  sec_password String?  // optional, home page lock
+  join_at      DateTime @default(now())
+
+  books        Book[]
+}
+
+model Book {
+  book_id      Int      @id @default(autoincrement())
+  owner_id     Int
+  sec_password String?   // optional book-level lock
+  title        String
+  description  String?
+  created_at   DateTime  @default(now())
+  updated_at   DateTime  @updatedAt
+
+  owner   User    @relation(fields: [owner_id], references: [user_id], onDelete: Cascade)
+  entities Entity[]
+}
+model Entity {
+  entity_id   Int        @id @default(autoincrement())
+  book_id     Int
+  title       String
+  content     String?
+  created_at  DateTime   @default(now())
+  updated_at  DateTime   @updatedAt
+
+  book        Book       @relation(fields: [book_id], references: [book_id], onDelete: Cascade)
+  attachments Attachment[]
+  tags        Tag[]      @relation("EntityTags")
+}
+
+model Tag {
+  tag_id     Int      @id @default(autoincrement())
+  tag_title  String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  entities Entity[] @relation("EntityTags")
+}
+
+
+model Attachment {
+  attachment_id Int      @id @default(autoincrement())
+  entity_id     Int
+  url           String
+  type          String
+  size          Int
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+
+  entity Entity @relation(fields: [entity_id], references: [entity_id], onDelete: Cascade)
+}
+
