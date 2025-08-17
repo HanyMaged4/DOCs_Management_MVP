@@ -17,7 +17,7 @@ export class AuthService{
             throw new ForbiddenException('Email not found');
         }
         // compare password
-        const isPasswordValid = argon.verify(targetUSer.password, dto.password);
+        const isPasswordValid = await argon.verify(targetUSer.password, dto.password);
         if(!isPasswordValid) {
             throw new ForbiddenException('Invalid password');
         }
