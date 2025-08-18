@@ -2,13 +2,16 @@ import { Controller, Delete, Get, Put, UseGuards, Body } from '@nestjs/common';
 import type { User } from '../../generated/prisma';
 import { GetUser } from '../Auth/decorators/get-user.decorator';
 import { JWTGuard } from '../Auth/guards';
+import { UserService } from './user.service';
 
 @Controller('users') 
 @UseGuards(JWTGuard)
 export class UserController {
+    constructor(private readonly UserService: UserService) {}
+    
     @Get('me') 
     getMe(@GetUser() user: User) {
-        return user;
+        return this.UserService.getMe(user);
     }
 
     @Put('me') 
