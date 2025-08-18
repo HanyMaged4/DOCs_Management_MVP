@@ -22,8 +22,8 @@ export class UserController {
     }
 
     @Delete('me') 
-    deleteMe(@GetUser() user: User) {
+    deleteMe(@GetUser('user_id') userId: number) {
 
-        return { message: `Deleting user ${user.user_id}` };
+        return this.UserService.deleteMe(userId);
     }
 }

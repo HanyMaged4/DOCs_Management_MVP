@@ -37,6 +37,7 @@ export class AuthService{
         const hashedSecPassword = dto.sec_password ? await argon.hash(dto.sec_password) : null;
     
         try{
+            console.log('Creating user with email:', dto);
         const user = await this.prisma.user.create(
             {
                 data:{
@@ -47,6 +48,7 @@ export class AuthService{
                 }
             }
         );
+        console.log('User created successfully:', user);
         return await this.signToken(user.user_id, user.email);
        }catch (error) {
             if (error.code === 'P2002') {
