@@ -6,7 +6,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 export class TagService {
   constructor(private readonly prisma : PrismaService) {}
   async create(createTagDto: TagDto , userId: number) {
-    const isExists = await this.prisma.tag.findUnique({
+    const isExists = await this.prisma.tag.findFirst({
       where:{
         tag_title: createTagDto.tag_title,
         user_id: userId
