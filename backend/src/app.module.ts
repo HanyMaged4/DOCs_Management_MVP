@@ -7,6 +7,8 @@ import { BookModule } from './book/book.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { TagModule } from './tag/tag.module';
 import { EntityModule } from './entity/entity.module';
+import { AttachmentModule } from './attachment/attachment.module';
+import { AttachmentModule } from './attachment/attachment.module';
 
 @Module({
   imports: [
@@ -15,7 +17,7 @@ import { EntityModule } from './entity/entity.module';
     }),
     AuthModule, 
     UserModule, 
-    BookModule, PrismaModule, TagModule, EntityModule
+    BookModule, PrismaModule, TagModule, EntityModule, AttachmentModule
   ]
 })
 export class AppModule {}
