@@ -7,6 +7,7 @@ import { BookModule } from './book/book.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { TagModule } from './tag/tag.module';
 import { EntityModule } from './entity/entity.module';
+import { AwsS3Module } from './aws-s3/aws-s3.module';
 
 @Module({
   imports: [
@@ -15,7 +16,7 @@ import { EntityModule } from './entity/entity.module';
     }),
     AuthModule, 
     UserModule, 
-    BookModule, PrismaModule, TagModule, EntityModule
+    BookModule, PrismaModule, TagModule, EntityModule, AwsS3Module
   ]
 })
 export class AppModule {}
