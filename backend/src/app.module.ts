@@ -8,6 +8,7 @@ import { PrismaModule } from './prisma/prisma.module';
 import { TagModule } from './tag/tag.module';
 import { EntityModule } from './entity/entity.module';
 import { AttachmentModule } from './attachment/attachment.module';
+import { AwsS3Module } from './aws-s3/aws-s3.module';
 import { AttachmentModule } from './attachment/attachment.module';
 
 @Module({
@@ -17,7 +18,7 @@ import { AttachmentModule } from './attachment/attachment.module';
     }),
     AuthModule, 
     UserModule, 
-    BookModule, PrismaModule, TagModule, EntityModule, AttachmentModule
+    BookModule, PrismaModule, TagModule, EntityModule, AttachmentModule, AwsS3Module
   ]
 })
 export class AppModule {}

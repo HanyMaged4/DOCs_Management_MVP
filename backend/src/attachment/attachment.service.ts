@@ -8,19 +8,19 @@ export class AttachmentService {
     return 'This action adds a new attachment';
   }
 
-  findAll() {
+  findAll(user_id: number) {
     return `This action returns all attachment`;
   }
 
-  findOne(id: number) {
+  findOne(id: number , user_id: number) {
     return `This action returns a #${id} attachment`;
   }
 
-  update(id: number, updateAttachmentDto: UpdateAttachmentDto) {
+  update(id: number, updateAttachmentDto: UpdateAttachmentDto , user_id: number) {
     return `This action updates a #${id} attachment`;
   }
 
-  remove(id: number) {
+  remove(id: number , user_id: number) {
     return `This action removes a #${id} attachment`;
   }
 }
