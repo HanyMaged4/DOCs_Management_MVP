@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber, IsOptional, IsString, Length } from "class-validator";
+import { IsArray, IsNotEmpty, IsNumber, IsOptional, IsString, Length } from "class-validator";
 
 export class UpdateEntityDto {
     @IsOptional()
@@ -17,4 +17,8 @@ export class UpdateEntityDto {
     @IsOptional()
     @IsNumber({}, { each: true, message: 'Tags must be an array of numbers' })
     tags: string[];
+
+    @IsOptional()
+    @IsArray()
+    attachments: Express.Multer.File[];
 }
