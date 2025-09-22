@@ -1,4 +1,4 @@
-import type { SignInDto, SignUpDto } from "./DTOs";
+import type { SignInDto, SignUpDto } from "./DTOs/Auth";
 
 const API_ENDPOINT:string = "http://localhost:3000/auth";
 
@@ -8,6 +8,7 @@ export async function signInAPI(user:SignInDto) {
         headers: {
             "Content-Type": "application/json",
         },
+        credentials: "include",
         body: JSON.stringify(user),
     });
     
@@ -24,6 +25,7 @@ export async function signUpAPI(user: SignUpDto) {
         headers: {
             "Content-Type": "application/json",
         },
+        credentials: "include",
         body: JSON.stringify(user),
     });
 

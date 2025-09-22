@@ -1,0 +1,49 @@
+.card {
+    /* make cards square and fit four per row (minus gaps) */
+    flex: 0 1 calc(25% - 20px);
+    aspect-ratio: 1 / 1;
+
+    /* distribute content vertically */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    /* existing styles */
+    background: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+/* …rest of your styles… */
+.card-title {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #333;
+}
+
+.card-description {
+    margin: 10px 0;
+    font-size: 1rem;
+    color: #666;
+}
+
+.card-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.card-tag {
+    background: #f0f0f0;
+    color: #555;
+    padding: 5px 10px;
+    border-radius: 8px;
+    font-size: 0.875rem;
+}

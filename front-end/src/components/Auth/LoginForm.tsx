@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { signInSchema } from "../../API/DTOs/signin.dto";
-import { signUpSchema } from "../../API/DTOs/signup.dto";
+import { signInSchema } from "../../API/DTOs/Auth/signin.dto";
+import { signUpSchema } from "../../API/DTOs/Auth/signup.dto";
 import { signUpAPI,signInAPI } from "../../API/auth";
 import "./LoginForm.css";
 import { useAuth } from "../../context/AuthContext";

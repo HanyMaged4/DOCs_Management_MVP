@@ -8,10 +8,10 @@ async function bootstrap() {
   
   // Simplified CORS for testing
   app.enableCors({
-    origin: '*',           // Allow all origins for testing
-    methods: '*',          // Allow all methods
-    allowedHeaders: '*',   // Allow all headers
-    credentials: false,    // Set to false for wildcard origin
+    origin: ['http://localhost:5173'],           // must exactly match your front-end URL
+    methods: ['GET','POST','PUT','PATCH','DELETE','OPTIONS'],
+    allowedHeaders: ['Content-Type','Authorization'],
+    credentials: true,
   });
   
   app.useGlobalPipes(new ValidationPipe({
