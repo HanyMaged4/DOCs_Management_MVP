@@ -1,0 +1,88 @@
+/* src/SearchBar.css */
+
+.search-bar-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+form {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ddd;
+  border-radius: 24px; /* Creates the rounded capsule shape */
+  padding: 0.5rem 1rem;
+  background-color: #f1f3f4;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 600px; /* Limits the width for a clean look */
+}
+
+/* Modern styling for the search bar */
+.search-bar {
+    width: 45%;  /* Adjusted width to occupy 40-50% of the available space */
+    padding: 10px 16px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Focus state for a modern interactive feel */
+.search-bar:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 12px rgba(0, 123, 255, 0.5);
+}
+
+input[type="text"] {
+  flex-grow: 1; /* Makes the input take up available space */
+  border: none;
+  outline: none;
+  background-color: transparent;
+  font-size: 1rem;
+  padding: 0.5rem;
+}
+
+button[type="submit"] {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+}
+
+/* For the Google Docs icon and profile picture */
+.docs-icon {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #4285F4;
+}
+
+.profile-pic-container {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    background-color: #eee;
+    margin-left: 1rem;
+    cursor: pointer;
+    overflow: hidden;
+}
+
+.profile-pic-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Optional: Container styling if needed */
+.search-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 8px;
+}
