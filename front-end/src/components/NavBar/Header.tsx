@@ -1,8 +1,11 @@
 import React from 'react';
 import SearchBar from './SearchBar/SearchBar';
 import './Header.css';
+import { useAuth } from '../../context/AuthContext';
 
 const Header: React.FC = () => {
+    const { logout } = useAuth();
+  
   return (
     <header className="docs-header">
       <div className="left-section">
@@ -17,8 +20,8 @@ const Header: React.FC = () => {
         <SearchBar />
       </div>
       <div className="right-section">
-        {/* You can use a profile picture or a generic user icon */}
-        <span className="profile-pic">👤</span>
+        {/* on click logout */}
+        <span className="profile-pic" onClick={logout}>👤</span>
       </div>
     </header>
   );

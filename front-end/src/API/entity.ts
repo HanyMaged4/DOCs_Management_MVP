@@ -1,4 +1,4 @@
-import type { CreateEntityInput, GetEntityInput, UpdateEntityInput } from './Entities';
+import type { CreateEntityInput, GetEntityInput, UpdateEntityInput } from './DTOs/Entities';
 
 const API_ENDPOINT:string = "http://localhost:3000/entities";
 

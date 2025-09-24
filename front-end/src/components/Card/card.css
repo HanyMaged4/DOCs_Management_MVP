@@ -1,5 +1,7 @@
 .card {
     /* make cards square and fit four per row (minus gaps) */
+    /* make it not exceed 300px in width */
+    max-width: 200px;
     flex: 0 1 calc(25% - 20px);
     aspect-ratio: 1 / 1;
 
@@ -19,6 +21,30 @@
 .card:hover {
     transform: translateY(-5px);
 }
+
+/* Action icons container positioned top-right */
+/* Remove absolute icons, use inline icons */
+.action-card .card-action-inline-icons {
+  display: flex;
+  gap: 12px;
+  margin-top: 12px;
+  justify-content: flex-end;
+}
+
+.card-icon-inline {
+  cursor: pointer;
+  fill: #555;
+  transition: transform 0.2s ease, fill 0.2s ease;
+}
+.card-icon-inline:hover {
+  transform: scale(1.1);
+  fill: #000;
+}
+
+/* Optionally color edit/delete differently */
+/* optional different fills */
+.edit-icon-inline:hover { fill: #ffc107; }
+.delete-icon-inline:hover { fill: #dc3545; }
 
 /* …rest of your styles… */
 .card-title {

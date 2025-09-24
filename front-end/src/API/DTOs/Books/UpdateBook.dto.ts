@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 export const updateBookSchema = z.object({
+    book_id: z.number().min(1).optional(),
     title: z
         .string()
         .trim()
