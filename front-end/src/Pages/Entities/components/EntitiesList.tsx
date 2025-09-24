@@ -8,7 +8,7 @@ interface SidebarProps {
     onDelete: (entityId: number) => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ entities, onSelect, onAdd }) => {
+const Sidebar: React.FC<SidebarProps> = ({ entities, onSelect, onAdd, onDelete }) => {
     return (
         <div style={{ width: '30%', padding: '20px', borderRight: '1px solid #ccc' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
