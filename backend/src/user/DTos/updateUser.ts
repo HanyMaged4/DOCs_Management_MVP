@@ -18,6 +18,6 @@ export class UpdateUserDto {
 
     @IsOptional()
     @IsString({ message: 'Security password must be a string' })
-    @MinLength(6, { message: 'Security password must be at least 6 characters long' })
+    // @MinLength(6, { message: 'Security password must be at least 6 characters long' })
     sec_password?: string;
 }
