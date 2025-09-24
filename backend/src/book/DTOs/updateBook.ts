@@ -28,7 +28,7 @@ import {
       
       @IsOptional()
       @IsString({ message: 'Security password must be a string' })
-      @MinLength(6, { message: 'Security password must be at least 6 characters' })
+    //   @MinLength(6, { message: 'Security password must be at least 6 characters' })
       @MaxLength(50, { message: 'Security password cannot exceed 50 characters' })
       sec_password?: string;
   }

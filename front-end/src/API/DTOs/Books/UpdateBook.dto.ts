@@ -19,7 +19,7 @@ export const updateBookSchema = z.object({
     sec_password: z
         .string()
         .trim()
-        .min(6, { message: "Security password must be at least 6 characters" })
+        // .min(6, { message: "Security password must be at least 6 characters" })
         .max(50, { message: "Security password cannot exceed 50 characters" })
         .optional(),
 });
