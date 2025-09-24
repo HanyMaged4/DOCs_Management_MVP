@@ -1,0 +1,39 @@
+.add-entity-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px;
+  width: 100%;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.add-entity-form input,
+.add-entity-form textarea {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+.form-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.form-actions button {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background 0.2s ease;
+}
+
+.form-actions button[type="button"] { background: #f0f0f0; color: #333; }
+.form-actions button[type="button"]:hover { background: #e0e0e0; }
+.form-actions button[type="submit"] { background: #007bff; color: #fff; }
+.form-actions button[type="submit"]:hover { background: #0069d9; }
+
+.form-error { color: red; font-size: 0.8rem; }

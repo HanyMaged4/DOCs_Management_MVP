@@ -31,8 +31,8 @@ export class EntityService {
           book_id: createEntityDto.book_id,
         }
       });
-
-      // Add tags if provided
+      console.log('Entity created:', data);
+      console.log('Tags:', tags);
       if (tags && tags.length > 0) {
         await this.prisma.entity.update({
           where: { entity_id: data.entity_id },

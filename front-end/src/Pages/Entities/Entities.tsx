@@ -1,14 +1,13 @@
-// App.tsx
 import React, { useEffect, useState } from 'react';
 import Sidebar from './components/EntitiesList';
 import EntityView from './components/EntityViews';
+import AddEntity from './components/Add_entity';
 import type { GetEntityInput }from '../../API/DTOs/Entities';
-import { getAllEntitiesAPI, getAllEntitiesByBookIDAPI } from '../../API/entity';
+import { getAllEntitiesByBookIDAPI, deleteEntityByIdAPI } from '../../API/entity';
 import { useAuth } from '../../context/AuthContext';
 import { useParams } from 'react-router-dom';
 
 
-//takes id as prop
 interface EntitiesProps {
     id?: string;
 }
@@ -19,6 +18,7 @@ const EntitiesPage: React.FC<EntitiesProps> = () => {
     const [data, setData] = useState<GetEntityInput[]>([]);
     const [loading, setLoading] = useState(true);
     const [error,   setError]   = useState<string | null>(null);
+    const [showAdd, setShowAdd] = useState(false);
     const { logout } = useAuth();
     
     useEffect(() => {
@@ -37,15 +37,37 @@ const EntitiesPage: React.FC<EntitiesProps> = () => {
     const handleSelectEntity = (entity: GetEntityInput) => {
         setSelectedEntity(entity);
     };
+    // delete an entity and update list
+    const handleDeleteEntity = (entityId: number) => {
+        deleteEntityByIdAPI(String(entityId))
+          .then(() => setData(prev => prev.filter(e => e.entity_id !== entityId)))
+          .catch(err => setError(err.message || 'Failed to delete entity'));
+    };
 
-    // show loading or error messages
     if (loading) return <div>Loading entities...</div>;
     if (error)   return <div style={{ color: 'red' }}>Error: {error}</div>;
 
     return (
         <div style={{ display: 'flex', height: '100vh' }}>
-            <Sidebar entities={data} onSelect={handleSelectEntity} />
-            <EntityView selectedEntity={selectedEntity} />
+            <Sidebar
+                entities={data}
+                onSelect={handleSelectEntity}
+                onAdd={() => setShowAdd(true)}
+                onDelete={handleDeleteEntity}
+            />
+            <div style={{ flex: 1, padding: '20px' }}>
+                {showAdd ? (
+                    <AddEntity
+                        onCancel={() => setShowAdd(false)}
+                        onAdd={entity => {
+                            setData(prev => [...prev, entity]);
+                            setShowAdd(false);
+                        }}
+                    />
+                ) : (
+                    <EntityView selectedEntity={selectedEntity} />
+                )}
+            </div>
         </div>
     );
 };
