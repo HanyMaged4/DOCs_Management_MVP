@@ -20,7 +20,13 @@ export async function getAllEntitiesAPI() {
     }
     return response.json() as Promise<GetEntityInput[]>;
 }
-
+export async function getAllEntitiesByBookIDAPI(bookId: string) {
+    const response = await fetch(`${API_ENDPOINT}/book/${bookId}`, requestOptions("GET"));
+    if (!response.ok) {
+        throw new Error(`Error fetching entities: ${response.statusText}`);
+    }
+    return response.json() as Promise<GetEntityInput[]>;
+}
 export async function getEntityByIdAPI(entityId: string) {
     const response = await fetch(`${API_ENDPOINT}/${entityId}`, requestOptions("GET"));
     

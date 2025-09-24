@@ -3,8 +3,9 @@ import React, { useEffect, useState } from 'react';
 import Sidebar from './components/EntitiesList';
 import EntityView from './components/EntityViews';
 import type { GetEntityInput }from '../../API/DTOs/Entities';
-import { getAllEntitiesAPI } from '../../API/entity';
+import { getAllEntitiesAPI, getAllEntitiesByBookIDAPI } from '../../API/entity';
 import { useAuth } from '../../context/AuthContext';
+import { useParams } from 'react-router-dom';
 
 
 //takes id as prop
@@ -12,16 +13,16 @@ interface EntitiesProps {
     id?: string;
 }
 
-const EntitiesPage: React.FC<EntitiesProps> = ({ id }) => {
+const EntitiesPage: React.FC<EntitiesProps> = () => {
+    const { id } = useParams<{ id: string }>();
     const [selectedEntity, setSelectedEntity] = useState<GetEntityInput | null>(null);
-    //get entities from API
     const [data, setData] = useState<GetEntityInput[]>([]);
     const [loading, setLoading] = useState(true);
     const [error,   setError]   = useState<string | null>(null);
     const { logout } = useAuth();
     
     useEffect(() => {
-        getAllEntitiesAPI()
+        getAllEntitiesByBookIDAPI(id!)
           .then(setData)
           .catch(err => {
             if (err.message === "Unauthorized") {
@@ -32,6 +33,7 @@ const EntitiesPage: React.FC<EntitiesProps> = ({ id }) => {
           })
           .finally(() => setLoading(false));
       }, []);
+
     const handleSelectEntity = (entity: GetEntityInput) => {
         setSelectedEntity(entity);
     };

@@ -66,7 +66,10 @@ export class EntityController {
   findOne(@Param('id') id: string, @GetUser('user_id') userId: number) {
     return this.entityService.findOne(+id, +userId);
   }
-
+  @Get('book/:bookId')
+  findByBook(@Param('bookId') bookId: string, @GetUser('user_id') userId: number) {
+    return this.entityService.findByBookId(+bookId, +userId);
+  }
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateEntityDto: UpdateEntityDto, @GetUser('user_id') userId: number) {
     return this.entityService.update(+id, updateEntityDto, +userId);

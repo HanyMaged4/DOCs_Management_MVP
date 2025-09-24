@@ -11,8 +11,7 @@ import BookPage from "./Pages/Books/Books";
 const router = createBrowserRouter([
   { path: "/login", element: <LoginForm /> },
   { path: "/", element: <ProtectedRoute><BookPage/></ProtectedRoute> },
-  { path: "/entities", element: <ProtectedRoute><EntitiesPage /></ProtectedRoute> }
-
+  { path: "/book/:id", element: <ProtectedRoute><EntitiesPage /></ProtectedRoute> }
 
 ]);
 

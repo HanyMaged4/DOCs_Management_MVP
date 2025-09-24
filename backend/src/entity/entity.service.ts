@@ -106,6 +106,19 @@ export class EntityService {
     return entity;
   }
 
+  async findByBookId(bookId: number, userId: number) {
+    const book = await this.prisma.book.findUnique({
+      where: { book_id: bookId, owner_id: userId }
+    });
+    if (!book) {
+      throw new NotFoundException('Book not found or you do not have permission to access it');
+    }
+    return await this.prisma.entity.findMany({
+      where: { book_id: bookId },
+      include: { book: true, tags: true, attachments: true }
+    });
+  }
+
   async update(id: number, updateEntityDto: UpdateEntityDto, userId: number) {
     const entity = await this.prisma.entity.findUnique({
       where: { entity_id: id },

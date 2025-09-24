@@ -53,7 +53,10 @@ function BookPage() {
           />
         ) : (
           <ActionCard
+          //on click navigate to entities page
+          
             key={String(book.book_id)}
+            book_id={book.book_id}
             title={book.title}
             description={book.description ?? ''}
             tags={['No Tags']}

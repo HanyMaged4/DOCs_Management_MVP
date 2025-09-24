@@ -1,18 +1,23 @@
 import React from 'react';
 import './card.css';
+import { useNavigate } from 'react-router-dom';
 
 export interface ActionCardProps {
+  book_id: number;
   title: string;
   description: string;
   tags: string[];
   onEdit: () => void;
   onDelete: () => void;
 }
-
-const ActionCard: React.FC<ActionCardProps> = ({ title, description, tags, onEdit, onDelete }) => (
-  <div className="card action-card">
-    <h2 className="card-title">{title}</h2>
-    <p className="card-description">{description}</p>
+const ActionCard: React.FC<ActionCardProps> = ({ book_id ,title, description, tags, onEdit, onDelete }) => {
+  const navigate = useNavigate();
+  return (
+    <div className="card action-card">
+      <div className="card-content" onClick={() => navigate(`/book/${book_id}`)}>
+        <h2 className="card-title">{title}</h2>
+        <p className="card-description">{description}</p>
+      </div>
     <div className="card-tags">
       {tags.map((tag, idx) => (
         <span key={idx} className="card-tag">{tag}</span>
@@ -29,5 +34,5 @@ const ActionCard: React.FC<ActionCardProps> = ({ title, description, tags, onEdi
     </div>
   </div>
 );
-
+};
 export default ActionCard;
