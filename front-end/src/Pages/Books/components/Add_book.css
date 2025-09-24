@@ -1,0 +1,90 @@
+.add-book-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 200px;
+  height: 200px;
+  background: #f9f9f9;
+  border: 2px dashed #ccc;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.3s ease, border-color 0.3s ease;
+}
+
+.add-book-card:hover {
+  background: #fff;
+  border-color: #007bff;
+}
+
+.add-icon {
+  font-size: 2.5rem;
+  color: #007bff;
+}
+
+.add-text {
+  margin-top: 8px;
+  font-size: 1rem;
+  color: #333;
+}
+
+.add-book-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px;
+  width: 200px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.add-book-form input,
+.add-book-form textarea {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+.add-book-form textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: space-between;
+}
+
+.form-actions button {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background 0.2s ease;
+}
+
+.form-actions button[type="button"] {
+  background: #f0f0f0;
+  color: #333;
+}
+
+.form-actions button[type="button"]:hover {
+  background: #e0e0e0;
+}
+
+.form-actions button[type="submit"] {
+  background: #007bff;
+  color: #fff;
+}
+
+.form-actions button[type="submit"]:hover {
+  background: #0069d9;
+}
+
+.form-error {
+  color: red;
+  font-size: 0.8rem;
+}
