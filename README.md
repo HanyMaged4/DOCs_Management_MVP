@@ -121,3 +121,8 @@ PORT=3000
 │   └── vite.config.ts
 └── README.md             # This file
 ```
+
+## Next Features
+- Integrate a Retrieval-Augmented Generation (RAG) with the user Docs
+- AI search: take user natural-language input, translate to SQL via LLM.
+- Enhance overall UI with more modern styling, improved responsiveness, and better UX patterns.
