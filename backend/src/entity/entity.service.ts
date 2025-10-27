@@ -83,7 +83,7 @@ export class EntityService {
     
     return await this.prisma.entity.findMany({
       where: { book: { owner_id: userId } },
-      include: { book: true }
+      include: { book: true  , attachments:true ,tags:true}
     });
 
   }
@@ -92,7 +92,7 @@ export class EntityService {
 
     const entity =await  this.prisma.entity.findUnique({
       where: { entity_id: id },
-      include: { book: true  , attachments:true}
+      include: { book: true  , attachments:true ,tags:true}
     });
 
     if (!entity) {
