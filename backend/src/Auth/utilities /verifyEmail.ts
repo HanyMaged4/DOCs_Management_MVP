@@ -1,6 +1,6 @@
 import {sanitizeInput} from './helper';
 
-export const verifyEmailTemplate = (verificationLink: string) => {
+export const verifyEmailTemplate = (verificationLink: string)=> {
     const sanitizedLink = sanitizeInput(verificationLink);
     return 
     `<html>
