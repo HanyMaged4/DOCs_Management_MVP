@@ -41,18 +41,7 @@ export class EntityController {
     @Body() createEntityDto: CreateEntityDto,
     @UploadedFiles() attachments: Express.Multer.File[],
     @GetUser('user_id') userId: number
-  ) {
-    console.log('=== RECEIVED DATA ===');
-    console.log('Raw DTO:', createEntityDto);
-    console.log('book_id:', createEntityDto.book_id, typeof createEntityDto.book_id);
-    console.log('title:', createEntityDto.title, typeof createEntityDto.title);
-    console.log('content:', createEntityDto.content, typeof createEntityDto.content);
-    console.log('tags:', createEntityDto.tags, typeof createEntityDto.tags);
-    console.log('Files:', attachments?.length || 0);
-    console.log('User ID:', userId);
-    console.log('===================');
-    
-
+  ) {    
     createEntityDto.attachments = attachments || [];
     return this.entityService.create(createEntityDto, +userId);
   }
