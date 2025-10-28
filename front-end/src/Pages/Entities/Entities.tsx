@@ -6,7 +6,9 @@ import type { GetEntityInput }from '../../API/DTOs/Entities';
 import { getAllEntitiesByBookIDAPI, deleteEntityByIdAPI } from '../../API/entity';
 import { useAuth } from '../../context/AuthContext';
 import { useParams } from 'react-router-dom';
-
+//import css 
+import './Entities.css';
+import './components/Add_entity.css'
 
 interface EntitiesProps {
     id?: string;

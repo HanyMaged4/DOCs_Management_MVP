@@ -83,7 +83,7 @@ export class EntityService {
     
     return await this.prisma.entity.findMany({
       where: { book: { owner_id: userId } },
-      include: { book: true }
+      include: { book: true  , attachments:true ,tags:true}
     });
 
   }
@@ -92,7 +92,7 @@ export class EntityService {
 
     const entity =await  this.prisma.entity.findUnique({
       where: { entity_id: id },
-      include: { book: true }
+      include: { book: true  , attachments:true ,tags:true}
     });
 
     if (!entity) {
@@ -102,7 +102,13 @@ export class EntityService {
     if (entity.book.owner_id !== userId) {
       throw new ForbiddenException('You do not have permission to access this entity');
     }
-
+    // loop over the url and return the url of the aws
+    // let urls:list<string>; 
+    entity.attachments.map(async att=>{
+      let cur = await this.aws.getPresignedUrl(att.S3_Key);
+      // urls.push(cur);
+      console.log("url to aws "+cur);
+    })
     return entity;
   }
 

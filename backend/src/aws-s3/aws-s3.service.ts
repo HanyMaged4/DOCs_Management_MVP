@@ -1,6 +1,7 @@
 // src/aws-s3/aws-s3.service.ts
 import { Injectable } from '@nestjs/common';
-import { S3Client, PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
+import { S3Client, PutObjectCommand, DeleteObjectCommand ,GetObjectCommand} from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
@@ -58,6 +59,7 @@ export class AwsS3Service {
     }
   }
 
+  
   async deleteFile(fileKey: string): Promise<void> {
     const command = new DeleteObjectCommand({
       Bucket: this.bucketName,
@@ -71,5 +73,31 @@ export class AwsS3Service {
     }
   }
 
+  async getPresignedUrl(fileKey: string, expiresInSeconds = 3600): Promise<string> {
+    const command = new GetObjectCommand({
+      Bucket: this.bucketName,
+      Key: fileKey,
+    });
+    try {
+      const url = await getSignedUrl(this.s3, command, { expiresIn: expiresInSeconds });
+      return url;
+    } catch (error) {
+      throw new Error(`Failed to generate presigned URL: ${error.message}`);
+    }
+  }
+    //streaminig the file to the backend -- if needed
+    async getFileStream(fileKey: string): Promise<NodeJS.ReadableStream> {
+    const command = new GetObjectCommand({
+      Bucket: this.bucketName,
+      Key: fileKey,
+    });
 
+    try {
+      const response = await this.s3.send(command);
+      // response.Body is a readable stream in Node.js
+      return response.Body as unknown as NodeJS.ReadableStream;
+    } catch (error) {
+      throw new Error(`Failed to get file stream: ${error.message}`);
+    }
+  }
 }

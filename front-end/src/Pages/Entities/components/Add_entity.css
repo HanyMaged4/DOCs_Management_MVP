@@ -1,39 +1,97 @@
 .add-entity-form {
   display: flex;
-  flex-direction: column;
-  gap: 12px;
-  padding: 20px;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+  padding: 18px;
   width: 100%;
   background: #fff;
   border-radius: 12px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.06);
+  box-sizing: border-box;
 }
 
-.add-entity-form input,
+/* Each labeled control */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 180px;
+  max-width: 420px;
+  flex: 0 1 220px; /* allows wrapping but keeps reasonable width */
+}
+
+.form-group label {
+  font-size: 0.9rem;
+  color: #333;
+  font-weight: 600;
+}
+
+.add-entity-form input[type="text"],
+.add-entity-form input[type="file"],
+.add-entity-form textarea,
+.add-entity-form input[type="number"] {
+  padding: 8px 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  background: #fff;
+  box-sizing: border-box;
+}
+
 .add-entity-form textarea {
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
+  min-height: 60px;
+  max-height: 180px;
+  resize: vertical;
+  width: 260px;
+}
+
+/* Make file input look compact */
+.add-entity-form input[type="file"] {
+  padding: 6px;
   font-size: 0.9rem;
 }
 
 .form-actions {
+  margin-left: auto; /* push actions to the far right */
   display: flex;
-  gap: 8px;
+  align-items: center;
 }
 
 .form-actions button {
-  padding: 8px 12px;
+  padding: 10px 14px;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
-  font-size: 0.9rem;
-  transition: background 0.2s ease;
+  font-size: 0.95rem;
+  transition: background 0.18s ease, transform 0.08s ease;
 }
 
-.form-actions button[type="button"] { background: #f0f0f0; color: #333; }
-.form-actions button[type="button"]:hover { background: #e0e0e0; }
-.form-actions button[type="submit"] { background: #007bff; color: #fff; }
-.form-actions button[type="submit"]:hover { background: #0069d9; }
+.form-actions button[type="submit"] {
+  background: #2fb14a; /* green like screenshot */
+  color: #fff;
+}
+.form-actions button[type="submit"]:hover {
+  background: #28a63f;
+  transform: translateY(-1px);
+}
 
-.form-error { color: red; font-size: 0.8rem; }
+.form-actions button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.form-error { color: #d9534f; font-size: 0.85rem; margin-bottom: 6px; }
+
+/* Responsive: stack vertically on narrow screens */
+@media (max-width: 720px) {
+  .add-entity-form {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .form-group { flex: 1 1 auto; min-width: unset; width: 100%; }
+  .add-entity-form textarea { width: 100%; }
+  .form-actions { margin-left: 0; justify-content: flex-end; width: 100%; }
+}

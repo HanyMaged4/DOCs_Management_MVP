@@ -5,10 +5,16 @@ import { PrismaService } from "src/prisma/prisma.service";
 import { error } from "console";
 import { JwtService } from "@nestjs/jwt";
 import { ConfigService } from "@nestjs/config";
+import { EmailServiceService } from "./email-service.service";
 @Injectable()
 export class AuthService{
     
-    constructor(private prisma:PrismaService , private jwt:JwtService,private config:ConfigService) {}
+    constructor(
+        private prisma:PrismaService ,
+        private jwt:JwtService,
+        private config:ConfigService,
+        private emailService:EmailServiceService
+    ) {}
 
 
     async signIn(dto : SignInDto){
@@ -74,6 +80,15 @@ export class AuthService{
         };
     }
 
-
+    async startVerifyEmail(email:string) {
+        // check if the email is in the DB
+        const user = await this.prisma.user.findUnique({
+            where: { email },
+        });
+        if (!user) {
+            throw new ForbiddenException('Email not found');
+        }
+        // to do: generate a verification code and send email and store it in the DB or cashes 
+    }
 
 }
