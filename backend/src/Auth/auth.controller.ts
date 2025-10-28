@@ -13,4 +13,22 @@ export class AuthController{
     signUp(@Body() dto:SignUpDto) {
         return this.authService.signUp(dto);
     }
+    
+    @Post('verify-email')
+    verifyEmail(@Body('code') code: string , @Body('email') email:string) {
+        return this.authService.verifyEmail(email, code);
+    }
+    @Post('resend-verification')
+    resendVerification(@Body('email') email: string) {
+        return this.authService.sendVerificationEmail(email);
+    }
+
+    // @Post('forgot-password')
+    // forgotPassword(@Body('email') email: string) {
+    //     // return this.authService.forgotPassword(email);
+    // }
+    // @Post('reset-password')
+    // resetPassword(@Body('code') code: string, @Body('newPassword') newPassword: string) {
+    //     // return this.authService.resetPassword(code, newPassword);
+    // }
 }

@@ -1,4 +1,4 @@
-import { Injectable, ConflictException, InternalServerErrorException, ForbiddenException } from "@nestjs/common";
+import { Injectable, ConflictException, InternalServerErrorException, ForbiddenException, Inject } from "@nestjs/common";
 import * as argon from 'argon2';
 import { SignInDto, SignUpDto } from "./DTOs/index";
 import { PrismaService } from "src/prisma/prisma.service";
@@ -6,6 +6,9 @@ import { error } from "console";
 import { JwtService } from "@nestjs/jwt";
 import { ConfigService } from "@nestjs/config";
 import { EmailServiceService } from "./email-service.service";
+import { generateRandomNum } from "./utilities /genCode";
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import type { Cache } from 'cache-manager';
 @Injectable()
 export class AuthService{
     
@@ -13,9 +16,9 @@ export class AuthService{
         private prisma:PrismaService ,
         private jwt:JwtService,
         private config:ConfigService,
-        private emailService:EmailServiceService
+        private emailService:EmailServiceService,
+        @Inject(CACHE_MANAGER) private cacheManager: Cache,
     ) {}
-
 
     async signIn(dto : SignInDto){
         // check if the user exists
@@ -80,15 +83,34 @@ export class AuthService{
         };
     }
 
-    async startVerifyEmail(email:string) {
-        // check if the email is in the DB
+    async sendVerificationEmail(email:string) {
         const user = await this.prisma.user.findUnique({
             where: { email },
         });
         if (!user) {
             throw new ForbiddenException('Email not found');
         }
-        // to do: generate a verification code and send email and store it in the DB or cashes 
+        const code = generateRandomNum(6);
+        console.log(`Generated verification code for ${email}: ${code}`);
+        try {
+            await this.emailService.sendVerificationEmail(email, code);
+             await this.cacheManager.set(`email-verification-${email}`, code, 15 * 60);
+         } catch (err) {
+            console.error('Error sending verification email:', err);
+            throw new InternalServerErrorException('Failed to send verification email');
+        }
+        console.log(`Verification email sent to ${email} with code ${code}`);
+    }
+
+    async verifyEmail(email: string, code: string) {
+        const cachedCode = await this.cacheManager.get<string>(`email-verification-${email}`);
+        if (cachedCode !== code) 
+            throw new ForbiddenException('Invalid or expired verification code');
+
+        // to-do: update user record to mark email as verified
+
+        await this.cacheManager.del(`email-verification-${email}`);
+        return { message: 'Email verified successfully' };
     }
 
 }
