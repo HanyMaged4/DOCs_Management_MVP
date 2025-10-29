@@ -104,7 +104,10 @@ export class AuthService{
         if (code !== cached) {
             throw new ForbiddenException('Invalid or expired verification code');
         }
-
+        await this.prisma.user.update({
+            where: { email },
+            data: { emailVerified: true},
+        });
         await this.cache.del(`email-verification-${email}`);
         return { message: 'Email verified successfully' };
     }

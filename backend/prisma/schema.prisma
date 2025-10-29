@@ -20,6 +20,7 @@ model User {
   email        String   @unique
   password     String
   sec_password String? 
+  emailVerified   Boolean   @default(false)
   join_at      DateTime @default(now())
 
   books        Book[]
