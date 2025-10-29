@@ -9,6 +9,7 @@ import { EmailServiceService } from "./email-service.service";
 import { generateRandomNum } from "./utilities /genCode";
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import type { Cache } from 'cache-manager';
+import { CacheService } from "src/cache/cache.service";
 @Injectable()
 export class AuthService{
     
@@ -17,7 +18,7 @@ export class AuthService{
         private jwt:JwtService,
         private config:ConfigService,
         private emailService:EmailServiceService,
-        @Inject(CACHE_MANAGER) private cacheManager: Cache,
+        private cache:CacheService
     ) {}
 
     async signIn(dto : SignInDto){
@@ -94,7 +95,7 @@ export class AuthService{
         console.log(`Generated verification code for ${email}: ${code}`);
         try {
             await this.emailService.sendVerificationEmail(email, code);
-             await this.cacheManager.set(`email-verification-${email}`, code, 15 * 60);
+             await this.cache.set(`email-verification-${email}`, code, 15 * 60);
          } catch (err) {
             console.error('Error sending verification email:', err);
             throw new InternalServerErrorException('Failed to send verification email');
@@ -103,13 +104,13 @@ export class AuthService{
     }
 
     async verifyEmail(email: string, code: string) {
-        const cachedCode = await this.cacheManager.get<string>(`email-verification-${email}`);
+        const cachedCode = await this.cache.get(`email-verification-${email}`);
         if (cachedCode !== code) 
             throw new ForbiddenException('Invalid or expired verification code');
 
         // to-do: update user record to mark email as verified
 
-        await this.cacheManager.del(`email-verification-${email}`);
+        await this.cache.del(`email-verification-${email}`);
         return { message: 'Email verified successfully' };
     }
 
