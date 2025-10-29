@@ -9,6 +9,7 @@ import { PrismaModule } from './prisma/prisma.module';
 import { EntityModule } from './entity/entity.module';
 import { AwsS3Module } from './aws-s3/aws-s3.module';
 import { MailModule } from './mail/mail.module';
+import { CacheModule } from './cache/cache.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -19,7 +20,7 @@ import { MailModule } from './mail/mail.module';
     BookModule, 
     PrismaModule, 
     EntityModule, 
-    AwsS3Module, MailModule
+    AwsS3Module, MailModule, CacheModule
   ],
 })
 export class AppModule {}
