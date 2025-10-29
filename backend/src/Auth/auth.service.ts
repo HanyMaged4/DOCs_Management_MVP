@@ -102,11 +102,28 @@ export class AuthService{
     }
 
     async verifyEmail(email: string, code: string) {
-        const cachedCode = await this.cache.get(`email-verification-${email}`);
-        if (cachedCode !== code) 
-            throw new ForbiddenException('Invalid or expired verification code');
+        const cached = await this.cache.get(`email-verification-${email}`);
 
-        // to-do: update user record to mark email as verified
+        const normalize = (v: any) => {
+            if (Buffer && Buffer.isBuffer(v)) v = v.toString('utf8');
+            let s = String(v ?? '').trim();
+            try {
+                const p = JSON.parse(s);
+                if (typeof p === 'string' || typeof p === 'number') s = String(p).trim();
+            } catch {}
+            if ((s.startsWith('"') && s.endsWith('"')) || (s.startsWith("'") && s.endsWith("'"))) {
+                s = s.slice(1, -1).trim();
+            }
+            return s.replace(/[\u200B-\u200D\uFEFF\u00A0]/g, '');
+        };
+
+        const stored = normalize(cached);
+        const provided = normalize(code);
+
+        if (stored !== provided) {
+            console.log(`verification failed: stored="${stored}" provided="${provided}"`);
+            throw new ForbiddenException('Invalid or expired verification code');
+        }
 
         await this.cache.del(`email-verification-${email}`);
         return { message: 'Email verified successfully' };

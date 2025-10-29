@@ -10,7 +10,7 @@ export class CacheService {
         return this.client.get(key);
     }
     
-    async set( key:string , value :any , ttl:number){
+    async set( key:string , value :any , ttl?:number){
         if(ttl)
             await this.client.setEx(key , ttl , JSON.stringify(value));
         else
