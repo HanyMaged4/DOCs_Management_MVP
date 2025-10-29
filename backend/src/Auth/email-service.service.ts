@@ -7,28 +7,28 @@ export class EmailServiceService {
     constructor (private mailerService: MailService) { }
 
     async sendVerificationEmail(to: string, code: string) {
-        //load template
+
         const temp:string = verifyEmailTemplate(`http://localhost:3000/auth/verify?code=${code}`);
-        console.log('Verification email template:', temp);
-        try {
-            await this.mailerService.sendEmail(
-                to,
-                'Email Verification',
-                temp,
-            );
-            console.log(`Verification email sent to ${to}`);
-        } catch (error) {
-            console.error(`Failed to send verification email to ${to}:`, error);
-        }
+
+        return await this.handleSending(to,'Email Verification',temp);
     }
     
     async sendResetPasswordEmail(to: string, code: string) {
-        //load template
+        
         const temp = resetPasswordTemplate(`http://localhost:3000/auth/reset-password?code=${code}`);
-        await this.mailerService.sendEmail(
+
+        return await this.handleSending(to,'Reset Password',temp);
+    }
+    
+    async handleSending(to:string ,title:string , temp:string){
+        try {
+            await this.mailerService.sendEmail(
             to,
-            'Reset Password',
+            title,
             temp,
         );
+        } catch (error) {
+            console.error(`Failed to send verification email to ${to}:`, error);
+        }
     }
 }
