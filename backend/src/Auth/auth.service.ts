@@ -83,10 +83,7 @@ export class AuthService{
     }
 
     async sendVerificationEmail(email:string) {
-        const user = await this.prisma.user.findUnique({
-            where: { email },
-        });
-        if (!user) {
+        if (!this.checkEmail(email)) {
             throw new ForbiddenException('Email not found');
         }
         const code = generateRandomNum(6);
@@ -128,5 +125,17 @@ export class AuthService{
         await this.cache.del(`email-verification-${email}`);
         return { message: 'Email verified successfully' };
     }
-
+    async forgotPassword(email){
+        if(! this.checkEmail(email))
+            throw new ForbiddenException('Email not found');
+        
+    }
+    private
+    async checkEmail(email : string){
+        const user = await this.prisma.user.findUnique({
+            where: { email },
+        });
+        if (!user) return false;
+        return true;
+    }
 }
