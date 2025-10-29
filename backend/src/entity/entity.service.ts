@@ -4,15 +4,20 @@ import { UpdateEntityDto } from './dto/update-entity.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { AwsS3Service } from 'src/aws-s3/aws-s3.service';
 import { url } from 'inspector';
+import { CacheService } from 'src/cache/cache.service';
 
 @Injectable()
 export class EntityService {
   
-  constructor(private readonly prisma:PrismaService , private readonly aws:AwsS3Service) {}
+  constructor(private readonly prisma:PrismaService , private readonly aws:AwsS3Service , private readonly cache:CacheService) {}
+
+  private readonly TTL_SECONDS = 60 * 5;
+  private entityKey = (userId: number, entityId: number) => `Entity:${userId}:${entityId}`;
+  private entityListKey = (userId: number) => `Entity:${userId}`;
+  private entityByBookKey = (userId: number, bookId: number) => `Entity:${userId}:Book:${bookId}`;
+
 
   async create(createEntityDto: CreateEntityDto, userId: number) {
-    console.log('Service received DTO:', createEntityDto);
-    console.log('User ID:', userId);
 
     const book = await this.prisma.book.findUnique({
       where: { book_id: createEntityDto.book_id, owner_id: userId }
@@ -59,6 +64,8 @@ export class EntityService {
           });
         }
       }
+      await this.cache.del(this.entityListKey(userId));
+      await this.cache.del(this.entityByBookKey(userId, createEntityDto.book_id));
 
       return {
         message: 'Entity created successfully',
@@ -72,6 +79,8 @@ export class EntityService {
   }
 
   async findAll(userId: number) {
+    const cached = await this.cache.get(this.entityListKey(userId));
+    if (cached) return cached;
 
     const user = await this.prisma.user.findUnique({
       where: { user_id: userId }
@@ -80,15 +89,20 @@ export class EntityService {
     if (!user) {
       throw new NotFoundException('User not found');
     }
-    
-    return await this.prisma.entity.findMany({
+    const res = await this.prisma.entity.findMany({
       where: { book: { owner_id: userId } },
-      include: { book: true  , attachments:true ,tags:true}
+      include: { book: true, attachments: true, tags: true }
     });
+
+    await this.cache.set(this.entityListKey(userId), res, this.TTL_SECONDS);
+    return res;
 
   }
 
   async findOne(id: number, userId: number) {
+    const key = this.entityKey(userId, id);
+    const cached = await this.cache.get(key);
+    if (cached) return cached;
 
     const entity =await  this.prisma.entity.findUnique({
       where: { entity_id: id },
@@ -109,8 +123,9 @@ export class EntityService {
       // urls.push(cur);
       console.log("url to aws "+cur);
     })
+    await this.cache.set(key, entity, this.TTL_SECONDS);
     return entity;
-  }
+    }
 
   async findByBookId(bookId: number, userId: number) {
     const book = await this.prisma.book.findUnique({
@@ -119,10 +134,17 @@ export class EntityService {
     if (!book) {
       throw new NotFoundException('Book not found or you do not have permission to access it');
     }
-    return await this.prisma.entity.findMany({
+    const key = this.entityByBookKey(userId, bookId);
+    const cached = await this.cache.get(key);
+    if (cached) return cached;
+
+    const res = await this.prisma.entity.findMany({
       where: { book_id: bookId },
       include: { book: true, tags: true, attachments: true }
     });
+
+    await this.cache.set(key, res, this.TTL_SECONDS);
+    return res;
   }
 
   async update(id: number, updateEntityDto: UpdateEntityDto, userId: number) {
@@ -145,6 +167,9 @@ export class EntityService {
       where: { entity_id: id },
       data: entityData
     });
+    await this.cache.del(this.entityKey(userId, id));
+    await this.cache.del(this.entityListKey(userId));
+    await this.cache.del(this.entityByBookKey(userId, entity.book_id));
 
     if (tags && tags.length > 0) {
       await this.prisma.entity.update({
@@ -176,10 +201,15 @@ export class EntityService {
     if (entity.book.owner_id !== userId) {
       throw new ForbiddenException('You do not have permission to delete this entity');
     }
-
-    return await this.prisma.entity.delete({
+    const deleted = await this.prisma.entity.delete({
       where: { entity_id: id }
-    });  
+    });
+
+    await this.cache.del(this.entityKey(userId, id));
+    await this.cache.del(this.entityListKey(userId));
+    await this.cache.del(this.entityByBookKey(userId, entity.book_id));
+
+    return deleted;
   }
 
   async addAttachments(entityId: number, attachments: Express.Multer.File[], userId: number) {
@@ -216,6 +246,9 @@ export class EntityService {
         throw new BadRequestException(`File upload failed: ${error.message}`);
       }
     }
+    await this.cache.del(this.entityKey(userId, entityId));
+    await this.cache.del(this.entityListKey(userId));
+    await this.cache.del(this.entityByBookKey(userId, entity.book_id));
 
     return urls;
   }
@@ -244,8 +277,14 @@ export class EntityService {
       await this.aws.deleteFile(attachment.S3_Key);
     }
 
-    return await this.prisma.attachment.deleteMany({
+    const res = await this.prisma.attachment.deleteMany({
       where: { attachment_id: { in: attachmentIds }, entity_id: entityId }
     });
+
+    await this.cache.del(this.entityKey(userId, entityId));
+    await this.cache.del(this.entityListKey(userId));
+    await this.cache.del(this.entityByBookKey(userId, entity.book_id));
+
+    return res;
   }
 }
