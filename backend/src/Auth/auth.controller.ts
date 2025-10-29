@@ -23,12 +23,12 @@ export class AuthController{
         return this.authService.sendVerificationEmail(email);
     }
 
-    // @Post('forgot-password')
-    // forgotPassword(@Body('email') email: string) {
-    //     // return this.authService.forgotPassword(email);
-    // }
-    // @Post('reset-password')
-    // resetPassword(@Body('code') code: string, @Body('newPassword') newPassword: string) {
-    //     // return this.authService.resetPassword(code, newPassword);
-    // }
+    @Post('forgot-password')
+    forgotPassword(@Body('email') email: string) {
+        return this.authService.forgotPassword(email);
+    }
+    @Post('reset-password')
+    resetPassword(@Body('email') email: string ,@Body('code') code: string, @Body('newPassword') newPassword: string) {
+        return this.authService.passwordUpdate(email , code, newPassword);
+    }
 }

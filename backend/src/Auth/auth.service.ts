@@ -83,7 +83,7 @@ export class AuthService{
     }
 
     async sendVerificationEmail(email:string) {
-        if (!this.checkEmail(email)) {
+        if (!await this.checkEmail(email)) {
             throw new ForbiddenException('Email not found');
         }
         const code = generateRandomNum(6);
@@ -99,39 +99,57 @@ export class AuthService{
     }
 
     async verifyEmail(email: string, code: string) {
-        const cached = await this.cache.get(`email-verification-${email}`);
+        const cached = await this.cache.get<string>(`email-verification-${email}`);
 
-        const normalize = (v: any) => {
-            if (Buffer && Buffer.isBuffer(v)) v = v.toString('utf8');
-            let s = String(v ?? '').trim();
-            try {
-                const p = JSON.parse(s);
-                if (typeof p === 'string' || typeof p === 'number') s = String(p).trim();
-            } catch {}
-            if ((s.startsWith('"') && s.endsWith('"')) || (s.startsWith("'") && s.endsWith("'"))) {
-                s = s.slice(1, -1).trim();
-            }
-            return s.replace(/[\u200B-\u200D\uFEFF\u00A0]/g, '');
-        };
-
-        const stored = normalize(cached);
-        const provided = normalize(code);
-
-        if (stored !== provided) {
-            console.log(`verification failed: stored="${stored}" provided="${provided}"`);
+        if (code !== cached) {
             throw new ForbiddenException('Invalid or expired verification code');
         }
 
         await this.cache.del(`email-verification-${email}`);
         return { message: 'Email verified successfully' };
     }
-    async forgotPassword(email){
+
+    async forgotPassword(email : string){
         if(! this.checkEmail(email))
             throw new ForbiddenException('Email not found');
-        
+        const code = generateRandomNum(6);
+        try{
+            await this.emailService.sendResetPasswordEmail(email,code);
+            await this.cache.set(`reset-password-verification-${email}`,code, 15 * 60)
+        }catch(err){
+            console.error('Error sending forgot password email:', err);
+            throw new InternalServerErrorException('Failed to send email');
+        }
     }
-    private
-    async checkEmail(email : string){
+
+    async passwordUpdate(email: string, code: string , newPassword:string){
+        
+        const ok = await this.verifyPasswordCode(email, code);
+        if (!ok) throw new ForbiddenException('Invalid or expired verification code');
+
+        const newPasswordHashed = await argon.hash(newPassword);
+        try {
+            await this.prisma.user.update({
+                where: { email },
+                data: { password: newPasswordHashed },
+            });
+            return { message: 'Password updated successfully' };
+        } catch (err) {
+            console.error('Error updating password:', err);
+            throw new InternalServerErrorException('Failed to update password');
+        }
+    }
+    private async verifyPasswordCode(email: string, code: string){
+        const cached = await this.cache.get(`reset-password-verification-${email}`);
+        
+        if (code !== cached) {
+            return false;
+        }
+
+        await this.cache.del(`reset-password-verification-${email}`);
+        return true;
+    }
+    private async checkEmail(email : string){
         const user = await this.prisma.user.findUnique({
             where: { email },
         });
