@@ -7,6 +7,10 @@ import { CacheService } from 'src/cache/cache.service';
 @Injectable()
 export class BookService {
     constructor(private prisma : PrismaService, private readonly cache:CacheService){}
+    private readonly TTL_SECONDS = 60 * 5;
+    private bookKey = (userId: number, bookId: number) => `Book:${userId}:${bookId}`;
+    private listKey = (userId: number) => `Book:${userId}`;
+    private searchKey = (userId: number, normQ: string) => `search:${userId}:${normQ}`;
 
     async createBook(userId: number , Dto: CreateBookDto) {
         const cur_user = await this.prisma.user.findUnique({
@@ -34,13 +38,13 @@ export class BookService {
             }
         });
         const { sec_password, ...res } = book;
-        this.cache.set(`Book:${userId}:${book.book_id}`,res,60 *5);
+        this.cache.set(this.bookKey(userId,book.book_id),res,this.TTL_SECONDS);
         return res;
     }
 
     async getBookById(id: number , userId: number) {
         
-        const cache = this.cache.get(`Book:${userId}:${id}`);
+        const cache = this.cache.get(this.bookKey(userId,id));
         if(cache)
             return cache;
 
@@ -55,7 +59,7 @@ export class BookService {
         }
         const { sec_password, ...res } = book;
 
-        this.cache.set(`Book:${userId}:${book.book_id}`,res,60 *5);
+        this.cache.set(this.bookKey(userId,id),res,this.TTL_SECONDS);
 
 
         return res;
@@ -84,7 +88,7 @@ export class BookService {
             }
         });
         const { sec_password, ...res } = updatedBook;
-        this.cache.set(`Book:${userId}:${book.book_id}`,res,60 *5);
+        this.cache.set(this.bookKey(userId,id),res,this.TTL_SECONDS);
         return res;
     }
 
@@ -104,7 +108,7 @@ export class BookService {
         await this.prisma.book.delete({
             where: { book_id: id }
         });
-        this.cache.del(`Book:${userId}:${book.book_id}`);
+        this.cache.del(this.bookKey(userId,id));
 
         return { message: 'Book deleted successfully' };
     }
@@ -112,7 +116,7 @@ export class BookService {
 
     async getBooksByUserId(userId: number) {
         
-         const cache = this.cache.get(`Book:${userId}`);
+         const cache = this.cache.get(this.listKey(userId));
         if(cache)
             return cache;
 
@@ -127,7 +131,7 @@ export class BookService {
             Object.assign(book, rest);
         });
         
-        this.cache.set(`Book:${userId}`,books,60 *5);
+        this.cache.set(this.listKey(userId),books,this.TTL_SECONDS);
         
         return books;
     }
@@ -141,8 +145,8 @@ export class BookService {
     
         const trimmedKeyword = keyword.trim();
         
-        const cache = this.cache.get(`search:${userId}:${keyword}`);
-        if(!cache)
+        const cache = this.cache.get(this.searchKey(userId,keyword));
+        if(cache)
             return cache;
 
         const books = await this.prisma.book.findMany({
@@ -172,7 +176,7 @@ export class BookService {
             count: books.length,
             books: books
         };
-        this.cache.set(`search:${userId}:${keyword}`,res,60 * 5);
+        this.cache.set(this.searchKey(userId,keyword), res , this.TTL_SECONDS);
         return res;
     }
 }
