@@ -39,6 +39,7 @@ export class BookService {
         });
         const { sec_password, ...res } = book;
         this.cache.set(this.bookKey(userId,book.book_id),res,this.TTL_SECONDS);
+        this.cache.del(this.listKey(userId));
         return res;
     }
 
@@ -60,7 +61,6 @@ export class BookService {
         const { sec_password, ...res } = book;
 
         this.cache.set(this.bookKey(userId,id),res,this.TTL_SECONDS);
-
 
         return res;
     }
@@ -89,6 +89,7 @@ export class BookService {
         });
         const { sec_password, ...res } = updatedBook;
         this.cache.set(this.bookKey(userId,id),res,this.TTL_SECONDS);
+        this.cache.del(this.listKey(userId));
         return res;
     }
 
@@ -109,6 +110,7 @@ export class BookService {
             where: { book_id: id }
         });
         this.cache.del(this.bookKey(userId,id));
+        this.cache.del(this.listKey(userId));
 
         return { message: 'Book deleted successfully' };
     }
@@ -144,10 +146,6 @@ export class BookService {
         }
     
         const trimmedKeyword = keyword.trim();
-        
-        const cache = this.cache.get(this.searchKey(userId,keyword));
-        if(cache)
-            return cache;
 
         const books = await this.prisma.book.findMany({
             where: {
@@ -176,7 +174,6 @@ export class BookService {
             count: books.length,
             books: books
         };
-        this.cache.set(this.searchKey(userId,keyword), res , this.TTL_SECONDS);
         return res;
     }
 }
