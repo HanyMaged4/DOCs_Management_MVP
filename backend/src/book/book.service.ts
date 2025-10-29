@@ -2,10 +2,11 @@ import { BadRequestException, ConflictException, Injectable, NotFoundException }
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateBookDto,UpdateBookDto } from './DTOs';
 import * as argon from 'argon2';
+import { CacheService } from 'src/cache/cache.service';
 
 @Injectable()
 export class BookService {
-    constructor(private prisma : PrismaService){}
+    constructor(private prisma : PrismaService, private readonly cache:CacheService){}
 
     async createBook(userId: number , Dto: CreateBookDto) {
         const cur_user = await this.prisma.user.findUnique({
@@ -33,10 +34,16 @@ export class BookService {
             }
         });
         const { sec_password, ...res } = book;
+        this.cache.set(`Book:${userId}:${book.book_id}`,res,60 *5);
         return res;
     }
 
     async getBookById(id: number , userId: number) {
+        
+        const cache = this.cache.get(`Book:${userId}:${id}`);
+        if(cache)
+            return cache;
+
         const book = await this.prisma.book.findUnique({
             where: { book_id: id }
         });
@@ -47,6 +54,10 @@ export class BookService {
             throw new ConflictException('You are not the owner of this book');
         }
         const { sec_password, ...res } = book;
+
+        this.cache.set(`Book:${userId}:${book.book_id}`,res,60 *5);
+
+
         return res;
     }
 
@@ -73,6 +84,7 @@ export class BookService {
             }
         });
         const { sec_password, ...res } = updatedBook;
+        this.cache.set(`Book:${userId}:${book.book_id}`,res,60 *5);
         return res;
     }
 
@@ -92,11 +104,18 @@ export class BookService {
         await this.prisma.book.delete({
             where: { book_id: id }
         });
+        this.cache.del(`Book:${userId}:${book.book_id}`);
+
         return { message: 'Book deleted successfully' };
     }
 
 
     async getBooksByUserId(userId: number) {
+        
+         const cache = this.cache.get(`Book:${userId}`);
+        if(cache)
+            return cache;
+
         const books = await this.prisma.book.findMany({
             where: { owner_id: userId }
         });
@@ -107,6 +126,9 @@ export class BookService {
             const { sec_password, ...rest } = book;
             Object.assign(book, rest);
         });
+        
+        this.cache.set(`Book:${userId}`,books,60 *5);
+        
         return books;
     }
 
@@ -118,7 +140,11 @@ export class BookService {
         }
     
         const trimmedKeyword = keyword.trim();
-    
+        
+        const cache = this.cache.get(`search:${userId}:${keyword}`);
+        if(!cache)
+            return cache;
+
         const books = await this.prisma.book.findMany({
             where: {
                 owner_id: userId, 
@@ -139,13 +165,14 @@ export class BookService {
                 created_at: 'desc'
             }
         });
-    
-        return {
+        const res = {
             message: books.length > 0 
                 ? `Found ${books.length} book(s) matching "${trimmedKeyword}"` 
                 : `No books found matching "${trimmedKeyword}"`,
             count: books.length,
             books: books
         };
+        this.cache.set(`search:${userId}:${keyword}`,res,60 * 5);
+        return res;
     }
 }
