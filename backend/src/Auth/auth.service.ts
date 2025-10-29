@@ -7,8 +7,6 @@ import { JwtService } from "@nestjs/jwt";
 import { ConfigService } from "@nestjs/config";
 import { EmailServiceService } from "./email-service.service";
 import { generateRandomNum } from "./utilities /genCode";
-import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import type { Cache } from 'cache-manager';
 import { CacheService } from "src/cache/cache.service";
 @Injectable()
 export class AuthService{
