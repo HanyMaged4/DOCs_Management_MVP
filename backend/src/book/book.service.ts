@@ -38,17 +38,18 @@ export class BookService {
             }
         });
         const { sec_password, ...res } = book;
-        this.cache.set(this.bookKey(userId,book.book_id),res,this.TTL_SECONDS);
-        this.cache.del(this.listKey(userId));
+        await this.cache.set(this.bookKey(userId,book.book_id),res,this.TTL_SECONDS);
+        await this.cache.del(this.listKey(userId));
         return res;
     }
 
     async getBookById(id: number , userId: number) {
         
-        const cache = this.cache.get(this.bookKey(userId,id));
-        if(cache)
+        const cache = await this.cache.get(this.bookKey(userId,id));
+        if(cache){
+            console.log("cache is "+ cache+"\n\n\n");
             return cache;
-
+        }
         const book = await this.prisma.book.findUnique({
             where: { book_id: id }
         });
@@ -60,7 +61,7 @@ export class BookService {
         }
         const { sec_password, ...res } = book;
 
-        this.cache.set(this.bookKey(userId,id),res,this.TTL_SECONDS);
+        await this.cache.set(this.bookKey(userId,id),res,this.TTL_SECONDS);
 
         return res;
     }
@@ -88,8 +89,8 @@ export class BookService {
             }
         });
         const { sec_password, ...res } = updatedBook;
-        this.cache.set(this.bookKey(userId,id),res,this.TTL_SECONDS);
-        this.cache.del(this.listKey(userId));
+        await this.cache.set(this.bookKey(userId,id),res,this.TTL_SECONDS);
+        await this.cache.del(this.listKey(userId));
         return res;
     }
 
@@ -109,8 +110,8 @@ export class BookService {
         await this.prisma.book.delete({
             where: { book_id: id }
         });
-        this.cache.del(this.bookKey(userId,id));
-        this.cache.del(this.listKey(userId));
+        await this.cache.del(this.bookKey(userId,id));
+        await this.cache.del(this.listKey(userId));
 
         return { message: 'Book deleted successfully' };
     }
@@ -118,7 +119,7 @@ export class BookService {
 
     async getBooksByUserId(userId: number) {
         
-         const cache = this.cache.get(this.listKey(userId));
+         const cache = await this.cache.get(this.listKey(userId));
         if(cache)
             return cache;
 
@@ -133,7 +134,7 @@ export class BookService {
             Object.assign(book, rest);
         });
         
-        this.cache.set(this.listKey(userId),books,this.TTL_SECONDS);
+        await this.cache.set(this.listKey(userId),books,this.TTL_SECONDS);
         
         return books;
     }

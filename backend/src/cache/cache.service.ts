@@ -10,7 +10,7 @@ export class CacheService {
         const v = await this.client.get(key);
         if (v == null) return null;
         try {
-            return JSON.parse(v) as T; // handles strings stored via JSON.stringify
+            return await JSON.parse(v) as T; // handles strings stored via JSON.stringify
         } catch {
             return v as unknown as T;  // fallback if value wasn't JSON
         }
